@@ -11,7 +11,8 @@ dependencies = [
     "tika==3.3.2",
     "ollama==0.6.3",
     "send2trash==2.1.0",
-    "imageio==2.38.1"
+    "imageio==2.38.1", 
+    "PyMuPDF"
 ]
 
 [project.scripts]
@@ -53,4 +54,4 @@ input_file = "main.py"
 exec_directory = "dist"
 icon = "App/app-icons/macos/AppIcon.icns"
 mode = "standalone"
-extra_args = "--macos-app-name=FNBN"
+extra_args = "--macos-app-name=FNBN --include-package-data=pymupdf"

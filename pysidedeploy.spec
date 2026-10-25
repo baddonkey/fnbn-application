@@ -101,7 +101,7 @@ macos.permissions =
 mode = standalone
 
 # specify any extra nuitka arguments
-extra_args = --macos-app-name=FNBN
+extra_args = --macos-app-name=FNBN --include-package-data=pymupdf
 
 [buildozer]
 
