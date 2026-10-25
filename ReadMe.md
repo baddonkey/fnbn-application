@@ -10,7 +10,14 @@ pip installe -e .
 ```
 
 ## Deploy
+
+First time only
 ```shell
+pyside6-deploy --init
+```
+
+```shell
+pyside6-deploy --init
 pyside6-deploy  
 ```
 
