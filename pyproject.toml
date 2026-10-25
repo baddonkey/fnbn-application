@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fnbn-application"
+version = "0.0.1"
+description = "Files Need Better Names (FNBN), spell it Finbin."
+dependencies = [
+    "PySide6>=6.12.0",
+    "tika==3.3.2",
+    "ollama==0.6.3",
+    "send2trash==2.1.0"
+]
+
+[project.scripts]
+fnbn-application = "main:main"
+
+[tool.setuptools]
+py-modules = [
+    "fnbn_backend",
+    "main"
+]
+packages = ["App"]
+
+[tool.setuptools.package-data]
+App = ["*.qml", "qmldir", "*.png"]
+
+[tool.setuptools.data-files]
+"share/fnbn/App/assets" = [
+    "fnbn-appicons/*.*",
+    "icons/*.*"
+]
+
+[tool.pyside6-project]
+files = [
+    "App/Main.qml",
+    "App/logo.png",
+    "App/qmldir",
+    "main.py",
+    "fnbn_backend/backend.py",
+    "fnbn_backend/file_table.py",
+    "fnbn_backend/proto_extractor.py",
+    "fnbn_backend/tikaContent.py",
+    "fnbn_backend/treemodel.py",
+]
+
+# Native application deployment
+[tool.pyside6.deploy]
+title = "FNBN"
+input_file = "main.py"
+exec_directory = "dist"
+icon = "App/app-icons/macos/AppIcon.icns"
+mode = "standalone"
+extra_args = "--macos-app-name=FNBN"
