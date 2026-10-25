@@ -19,7 +19,12 @@ def main() -> int:
     QQuickStyle.setStyle("Fusion")
 
     app = QGuiApplication(sys.argv)
-    app.setWindowIcon(QIcon("./assets/app-icons/qt/app.png"))
+
+    #app.setWindowIcon(QIcon("./assets/app-icons/qt/app.png"))
+
+    icon_path = Path(__file__).resolve().parent / "App/app-icons/AppIcon.png"
+    app.setWindowIcon(QIcon(str(icon_path)))
+
 
     app.setApplicationName("FNBN 0.0.1")
     app.setApplicationDisplayName("FNBN - Files Need Bettet Names 0.0.1")
