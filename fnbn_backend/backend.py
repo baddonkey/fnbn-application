@@ -76,6 +76,12 @@ class Backend(QObject):
         item.dirty = True
         self.tableModel.setData(index_newfilename, new_title, Qt.ItemDataRole.EditRole)
 
+    # Inside your existing backend class:
+    @Slot("QVariantList")
+    def suggestSelectedRows(self, rows):
+        for row in sorted({int(row) for row in rows}):
+            self.suggestFilename(row)
+
     @Slot(int)
     def openFile(self, row):
         item = self.tableModel.item_at(row)

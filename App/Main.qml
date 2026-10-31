@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import QtQml.Models
 
 
 Page {
@@ -22,6 +23,26 @@ Page {
                 ToolTip.visible: hovered
                 ToolTip.text: "Open the top foler to browse for files"
 
+            }
+
+            ToolButton {
+                icon.color: palette.buttonText
+                text: qsTr("Suggest Selected")
+                icon.source: "icons/cpu-ai.svg"
+                onClicked: {
+
+                    const indexes = tableView.selectionModel.selectedRows(0)
+                    const rows = []
+
+                    for (let i = 0; i < indexes.length; i++)
+                        rows.push(indexes[i].row)
+
+                    rows.sort(function(a, b) { return a -b})
+
+                    backend.suggestSelectedRows(rows);
+                }
+                ToolTip.visible: hovered
+                ToolTip.text: "Create the suggestion for all selected files"
             }
 
             Item {
@@ -155,7 +176,7 @@ Page {
                     }
 
 
-       
+
 
                     Label {
                         id: indicator
@@ -236,6 +257,16 @@ Page {
 
                     model: tableModel
 
+                    acceptedButtons: Qt.NoButton
+                    selectionBehavior: TableView.SelectRows
+                    selectionMode: TableView.ExtendedSelection
+                    pointerNavigationEnabled: false
+                    property int selectionAnchorRow: -1
+
+                    selectionModel: ItemSelectionModel {
+                        model: tableView.model
+                    }
+
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
                     }
@@ -268,9 +299,10 @@ Page {
                         required property int column
                         required property var display
                         required property var edit
+                        required property bool selected
 
-                        color: palette.base
 
+                        color: cell.selected ? palette.highlight : palette.base
                         Rectangle {
                             anchors.left: parent.left
                             anchors.right: parent.right
@@ -295,13 +327,51 @@ Page {
                             verticalAlignment: Text.AlignVCenter
 
                             text: cell.display ?? ""
-                            color: palette.text
+                            color: cell.selected ? palette.highlightedText : palette.text
 
-                            MouseArea {
-                                    anchors.fill: parent
-                                    acceptedButtons: Qt.LeftButton
 
-                                    onDoubleClicked: backend.openFile(cell.row)
+                            TapHandler {
+                                id: rowTapHandler
+                                acceptedButtons: Qt.LeftButton
+                                gesturePolicy: TapHandler.DragThreshold
+
+                                onTapped: function(eventPoint, button) {
+                                    const selection = tableView.selectionModel
+                                    const index = tableView.index(cell.row, 0)
+                                    const ctrl = (rowTapHandler.point.modifiers & Qt.ControlModifier) !== 0
+                                    const shift = (rowTapHandler.point.modifiers & Qt.ShiftModifier) !== 0
+
+                                    tableView.forceActiveFocus()
+
+                                    if (shift && tableView.selectionAnchorRow >= 0) {
+                                        if (!ctrl)
+                                            selection.clearSelection()
+
+                                        const first = Math.min(tableView.selectionAnchorRow, cell.row)
+                                        const last = Math.max(tableView.selectionAnchorRow, cell.row)
+
+                                        for (let r = first; r <= last; ++r) {
+                                            selection.select(
+                                                tableView.index(r, 0),
+                                                ItemSelectionModel.Select | ItemSelectionModel.Rows
+                                            )
+                                        }
+                                    } else {
+                                        selection.select(
+                                            index,
+                                            (ctrl
+                                                ? ItemSelectionModel.Toggle
+                                                : ItemSelectionModel.ClearAndSelect)
+                                                | ItemSelectionModel.Rows
+                                        )
+
+                                        tableView.selectionAnchorRow = cell.row
+                                    }
+
+                                    selection.setCurrentIndex(index, ItemSelectionModel.NoUpdate)
+                                }
+
+                                //onDoubleTapped: backend.openFile(cell.row)
                             }
 
                         }
@@ -312,7 +382,7 @@ Page {
                             anchors.fill: parent
                             anchors.margins: 4
                             
-                            color: tableModel.item_at(cell.row).dirty ? palette.highlightedText : palette.text
+                            color: (cell.selected || tableModel.item_at(cell.row).dirty) ? palette.highlightedText : palette.text
 
                             text: display ?? ""
                             horizontalAlignment: Text.AlignLeft
@@ -325,7 +395,7 @@ Page {
 
                             background: Rectangle {
                                 radius: 4
-                                color:  tableModel.item_at(cell.row).dirty ? palette.highlight : palette.base
+                                color:  (tableModel.item_at(cell.row).dirty) ? palette.accent : palette.base
                             }
                         }
 
