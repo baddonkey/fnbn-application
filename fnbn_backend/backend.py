@@ -1,5 +1,6 @@
 import json
 from fnbn_backend import file_table
+from fnbn_backend.settings import Settings
 from fnbn_backend.treemodel import TreeModel
 from PySide6.QtCore import QModelIndex, QObject, QUrl, Qt, Signal, Slot
 from PySide6.QtGui import QDesktopServices
@@ -12,10 +13,11 @@ from send2trash import send2trash
 class Backend(QObject):
     treeReloaded = Signal()
 
-    def __init__(self, model: TreeModel, tableModel: file_table.FileTableModel):
+    def __init__(self, model: TreeModel, tableModel: file_table.FileTableModel, settings: Settings):
         super().__init__()
         self.model = model
         self.tableModel = tableModel
+        self.settings = settings
 
     @Slot(QUrl)
     def folder_selected(self, folder_url: QUrl):
@@ -44,30 +46,19 @@ class Backend(QObject):
         result = tikaContent.TikaContent().extract_content(str(absolute_path))
         creation_date = str(result['metadata']["dcterms:created"])
 
-        # extract the title by sending the first PDF-page as an image to ollama
-        prompt = f"""
-        You are a filename generator, not a document summarizer.
+        # resolve prompt
+        prompt = next(
+            (p["value"] for p in self.settings.prompts if p["name"] == self.settings.promptName),
+            None,
+        )
+        prompt = prompt.format(suffix=item.original_path.suffix.lstrip("."), creation_date=creation_date)
 
-        Generate exactly ONE filename using the exact title of the document. If no title is found use to a maximum of 5 descriptive keywords.
-
-        Use this creation date of no date is found on the document: {creation_date}
-
-        Rules:
-        - Format: YYYYMMDD_Title.{item.original_path.suffix.lstrip('.')}
-        - Use an actual 8-digit document date.
-        - Never repeat words.
-        - Use underscores instead of spaces.
-        - Never include the literal word "extension".
-        - Never summarize the document.
-        - Never output explanations.
-        - The filename must be at most 120 characters long.
-        - Return only the JSON object requested by the output schema.
-        """
+        print(f"Prompt: {prompt}")
 
         extractor = proto_extractor.PDFTitleExtractor(
-            model="qwen3-vl:4b-instruct-q8_0",
-            dpi=200,
-            host="http://192.168.1.49:11434",
+            model=self.settings.modelName,
+            dpi=100,
+            host=self.settings.ollamaUrl,
             prompt = prompt
         )
 

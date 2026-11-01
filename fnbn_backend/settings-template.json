@@ -1,0 +1,12 @@
+{
+    "ollamaUrl": "http://localhost:11434",
+    "modelName": "qwen3-vl:2b-instruct-q8_0",
+    "promptName": "Default",
+    "prompts":
+    [
+        {
+            "name": "Default", 
+            "value": "You are a filename generator, not a document summarizer.\n\nGenerate exactly ONE filename using the exact title of the document. If no title is found use to a maximum of 5 descriptive keywords.\n\nUse this creation date of no date is found on the document: {{creation_date}}\n\nRules:\n- Format: YYYYMMDD_Title.{{suffix}}\n- Use an actual 8-digit document date.\n- Never repeat words.\n- Use underscores instead of spaces.\n- Never include the literal word \"extension\".\n- Never summarize the document.\n- Never output explanations.\n- The filename must be at most 120 characters long.\n- Return only the JSON object requested by the output schema."
+        }
+    ]
+}

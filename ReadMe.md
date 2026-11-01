@@ -38,3 +38,7 @@ open FNBN.app
 
 ## Resources
 * Icons: https://lucide.dev/icons/?utm_source=chatgpt.com
+
+## Models tested
+* qwen3-vl:4b-instruct-q8_0
+* qwen3-vl:2b-instruct-q8_0
