@@ -6,6 +6,7 @@ from pathlib import Path
 import fnbn_backend.backend as backend
 import fnbn_backend.file_table as file_table
 from fnbn_backend.settings import Settings
+from fnbn_backend.suggest import SuggestTaskController
 import fnbn_backend.treemodel as treemodel
 from pathlib import Path
 from PySide6.QtQuickControls2 import QQuickStyle
@@ -49,6 +50,10 @@ def main() -> int:
         view.engine()
     )
     view.engine().rootContext().setContextProperty("settings", settings)
+
+    # setup suggest task controller
+    suggestTaskController = SuggestTaskController()
+    view.engine().rootContext().setContextProperty("suggestTaskController", suggestTaskController)
 
     # setup the backend
     home = Path.home()

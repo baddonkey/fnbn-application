@@ -37,7 +37,8 @@ Page {
 
                     rows.sort(function(a, b) { return a -b})
 
-                    backend.suggestSelectedRows(rows);
+                    //backend.suggestSelectedRows(rows);
+                    suggestTaskController.startTask(backend, rows)
                 }
                 ToolTip.visible: hovered
                 ToolTip.text: "Create the suggestion for all selected files"
@@ -57,6 +58,65 @@ Page {
             }
         }
     }
+
+    Dialog {
+        id: progressDialog
+
+        title: "Please wait"
+
+        width: 350
+
+        anchors.centerIn: parent
+
+        modal: true
+        focus: true
+
+        // Prevent closing with Escape or outside click
+        closePolicy: Popup.NoAutoClose
+
+        // Dim the background
+        dim: true
+
+        ColumnLayout {
+            width: parent.width
+            spacing: 20
+
+            Label {
+                text: suggestTaskController.status
+                Layout.fillWidth: true
+            }
+
+            ProgressBar {
+                id: progressBar
+
+                Layout.fillWidth: true
+
+                from: 0
+                to: 100
+
+                value: suggestTaskController.progress
+            }
+
+            Label {
+                text: suggestTaskController.progress + "%"
+                Layout.alignment: Qt.AlignHCenter
+            }
+
+            Button {
+                id: cancelButton
+
+                text: "Cancel"
+
+                Layout.alignment: Qt.AlignHCenter
+
+                enabled: suggestTaskController.status !== "Cancelling..."
+
+                onClicked: {
+                    suggestTaskController.cancelTask()
+                }
+            }
+        }
+    }    
 
     FolderDialog {
         id: folderDialog
@@ -135,6 +195,18 @@ Page {
 
         onRejected: {
             console.log("Settings cancelled")
+        }
+    }
+
+    Connections {
+        target: suggestTaskController
+
+        function onRunningChanged() {
+            if (suggestTaskController.running) {
+                progressDialog.open()
+            } else {
+                progressDialog.close()
+            }
         }
     }
 
@@ -517,7 +589,9 @@ Page {
                                     verticalAlignment: Text.AlignVCenter
                                 }
 
-                                onClicked: backend.suggestFilename(cell.row)
+                                onClicked: {
+                                    suggestTaskController.startTask(backend, [cell.row])
+                                }
                             }
 
                             Button {
