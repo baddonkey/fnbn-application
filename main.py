@@ -19,6 +19,7 @@ def main() -> int:
     QQuickStyle.setStyle("Fusion")
 
     app = QGuiApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(True)
     icon_path = Path(__file__).resolve().parent / "App/app-icons/AppIcon.png"
     app.setWindowIcon(QIcon(str(icon_path)))
 
@@ -65,8 +66,10 @@ def main() -> int:
 
     view.showMaximized()
 
-    app.exec()
+    ret = app.exec()
     del view
+
+    return ret
 
 if __name__ == "__main__":
     sys.exit(main())
