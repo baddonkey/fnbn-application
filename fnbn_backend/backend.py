@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from fnbn_backend import file_table
 from fnbn_backend.settings import Settings
@@ -38,34 +39,49 @@ class Backend(QObject):
 
     @Slot(int)
     def suggestFilename(self, row):
-        
-        item = self.tableModel.item_at(row)
-        absolute_path = item.original_path.resolve()
 
-        # read metadata without content
-        result = tikaContent.TikaContent().extract_content(str(absolute_path))
-        creation_date = str(result['metadata']["dcterms:created"])
+        try:
+            item = self.tableModel.item_at(row)
+            absolute_path = item.original_path.resolve()
 
-        # resolve prompt
-        prompt = next(
-            (p["value"] for p in self.settings.prompts if p["name"] == self.settings.promptName),
-            None,
-        )
-        prompt = prompt.format(suffix=item.original_path.suffix.lstrip("."), creation_date=creation_date)
+            # read metadata without content
+            result = tikaContent.TikaContent().extract_content(str(absolute_path))
 
-        print(f"Prompt: {prompt}")
+            creation_date = ""
 
-        extractor = proto_extractor.PDFTitleExtractor(
-            model=self.settings.modelName,
-            dpi=100,
-            host=self.settings.ollamaUrl,
-            prompt = prompt
-        )
+            try: 
+                creation_date = str(result['metadata']["dcterms:created"])
+            except:
+                stat = item.original_path.stat()
+                creation_date = (
+                    datetime.fromtimestamp(stat.st_birthtime).strftime("%Y%m%d")
+                    if hasattr(stat, "st_birthtime")
+                    else ""
+                )
 
-        new_title = json.loads(extractor.extract_title(absolute_path))["filename"]
-        index_newfilename = self.tableModel.index(row, 1)
-        item.dirty = True
-        self.tableModel.setData(index_newfilename, new_title, Qt.ItemDataRole.EditRole)
+
+            # resolve prompt
+            prompt = next(
+                (p["value"] for p in self.settings.prompts if p["name"] == self.settings.promptName),
+                None,
+            )
+            prompt = prompt.format(suffix=item.original_path.suffix.lstrip("."), creation_date=creation_date)
+
+            print(f"Prompt: {prompt}")
+
+            extractor = proto_extractor.PDFTitleExtractor(
+                model=self.settings.modelName,
+                dpi=100,
+                host=self.settings.ollamaUrl,
+                prompt = prompt
+            )
+
+            new_title = json.loads(extractor.extract_title(absolute_path))["filename"]
+            index_newfilename = self.tableModel.index(row, 1)
+            item.dirty = True
+            self.tableModel.setData(index_newfilename, new_title, Qt.ItemDataRole.EditRole)
+        except Exception as exc:
+            print(f'Error: {exc}')
 
     # Inside your existing backend class:
     @Slot("QVariantList")
