@@ -129,73 +129,9 @@ Page {
         }
     }
 
-    Dialog {
+    SettingsDialog {
         id: settingsDialog
-        title: qsTr("Settings")
-
-        parent: Overlay.Overlay
-        anchors.centerIn: parent
-        width: 360
-
-        modal: true
-        focus: true
-
-        closePolicy: Popup.CloseOnEscape
-
-        standardButtons: Dialog.Ok | Dialog.Cancel
-
-        Connections {
-            target: settings 
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-
-            Label {
-                text: qsTr("Ollama URL")
-            }
-
-            TextField {
-                id: ollamaUrlField
-                Layout.fillWidth: true
-                placeholderText: "http://localhost:11434"
-                selectByMouse: true
-            }
-
-            Label {
-                text: qsTr("Model")
-            }
-
-            TextField { 
-                id: modelNameField
-                Layout.fillWidth: true
-                placeholderText: "qwen3-vl:2b-instruct-q8_0"
-            }
-
-            Label {
-                text: qsTr("Prompt Name")
-            }
-
-            TextField { 
-                id: promptNameField
-                Layout.fillWidth: true
-                placeholderText: "Default"
-            }
-        }
-
-        onOpened: {
-            ollamaUrlField.text = settings.ollamaUrl
-            modelNameField.text = settings.modelName
-            promptNameField.text = settings.promptName
-        }
-
-        onAccepted: {
-            settings.save(ollamaUrlField.text, modelNameField.text, promptNameField.text)
-        }
-
-        onRejected: {
-            console.log("Settings cancelled")
-        }
+        settingsStore: settings
     }
 
     Connections {

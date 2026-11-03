@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from PySide6.QtCore import Property, QObject, Signal, Slot
+from PySide6.QtGui import QFont, QFontDatabase
 
 class Settings(QObject): 
     settingsChanged = Signal()
@@ -80,3 +81,20 @@ class Settings(QObject):
         self.settingsChanged.emit()
 
         return True
+
+    @Property(QFont, constant=True)
+    def fixedFont(self):
+        return QFontDatabase.systemFont(
+            QFontDatabase.SystemFont.FixedFont
+        )
+
+
+    @Slot(int, str)
+    def updatePromptValue(self, index: int, value: str):
+        
+        print('Update prompt value')
+
+        prompts = self._values["prompts"]
+
+        if 0 <= index < len(prompts):
+            prompts[index]["value"] = value
