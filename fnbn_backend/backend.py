@@ -38,6 +38,17 @@ class Backend(QObject):
         self.model.load_children(index)
 
     @Slot(int)
+    def resetFilename(self, row):
+
+        try:
+            item = self.tableModel.item_at(row)
+            index_newfilename = self.tableModel.index(row, 1)
+            item.dirty = False
+            self.tableModel.setData(index_newfilename, item.filename, Qt.ItemDataRole.EditRole)
+        except Exception as exc:
+            print(f'Error: {exc}')
+
+    @Slot(int)
     def suggestFilename(self, row):
 
         try:
