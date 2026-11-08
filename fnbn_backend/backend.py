@@ -87,7 +87,11 @@ class Backend(QObject):
                 prompt = prompt
             )
 
-            new_title = json.loads(extractor.extract_title(absolute_path))["filename"]
+            result = extractor.extract_title(absolute_path)
+
+            print(f'Result : {result}')
+
+            new_title = json.loads(result)["filename"]
             index_newfilename = self.tableModel.index(row, 1)
             item.dirty = True
             self.tableModel.setData(index_newfilename, new_title, Qt.ItemDataRole.EditRole)

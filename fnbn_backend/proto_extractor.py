@@ -6,7 +6,7 @@ class PDFTitleExtractor:
 
     def __init__(
         self,
-        model: str = "gemma3:12b",
+        model: str = "gemma3:4b",
         dpi: int = 200,
         host: str | None = None,
         prompt: str | None = None,
@@ -41,6 +41,8 @@ class PDFTitleExtractor:
                     "images": [image],
                 }
             ],
+            format="json",
+            stream= False,
             options={
                 "temperature": 0,
             },

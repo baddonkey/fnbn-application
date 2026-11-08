@@ -1,6 +1,6 @@
 {
     "ollamaUrl": "http://localhost:11434",
-    "modelName": "qwen3-vl:2b-instruct-q8_0",
+    "modelName": "gemma3:4b",
     "promptName": "Default",
     "prompts":
     [
