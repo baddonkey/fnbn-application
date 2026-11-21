@@ -51,7 +51,8 @@ class BackendCli:
 
             print(f"Prompt: {prompt}")
 
-            extractor = proto_extractor.PDFTitleExtractor(
+            extractor = proto_extractor.TitleExtractorFactory.getInstance(
+                Path(filename),
                 model=self.settings.modelName,
                 dpi=100,
                 host=self.settings.ollamaUrl,

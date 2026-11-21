@@ -153,7 +153,7 @@ class FileTableModel(QAbstractTableModel):
                 continue
 
             # for the moment only PDFs
-            if not entry.name.lower().endswith(".pdf"):
+            if not(entry.name.lower().endswith(".pdf") or entry.name.lower().endswith(".png")):
                 continue
 
             if entry.is_file():

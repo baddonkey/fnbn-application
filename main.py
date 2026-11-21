@@ -23,7 +23,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         "FNBN",
         description="Files Need Better Names",
-        epilog="Processing PDFs only so far",
+        epilog="Processing PDFs and PNGs only so far",
     )
 
     parser.add_argument("-f", "--filename")
@@ -49,14 +49,14 @@ def main() -> int:
     icon_path = Path(__file__).resolve().parent / "App/app-icons/AppIcon.png"
     app.setWindowIcon(QIcon(str(icon_path)))
 
-    app.setApplicationName("FNBN 0.0.1")
-    app.setApplicationDisplayName("FNBN - Files Need Better Names 0.0.1")
+    app.setApplicationName("FNBN 0.0.2")
+    app.setApplicationDisplayName("FNBN - Files Need Better Names 0.0.2")
     app.setOrganizationName("Baddonkey")
 
     # setup main view
     view = QQuickView()
     view.engine().addImportPath(str(BASE_DIR))
-    view.setTitle("FNBN - Files Need Better Names 0.0.1 | PDF-only")
+    view.setTitle("FNBN - Files Need Better Names 0.0.1 | PDF- and PNG-only")
     view.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
 
     # setup the left side bar
