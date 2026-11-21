@@ -1,9 +1,11 @@
+import argparse
 import sys
 from PySide6.QtQuick import QQuickView
 from PySide6.QtGui import QGuiApplication, QIcon, QStandardItem, QStandardItemModel
 from PySide6.QtCore import QUrl
 from pathlib import Path
 import fnbn_backend.backend as backend
+from fnbn_backend.backend_cli import BackendCli
 import fnbn_backend.file_table as file_table
 from fnbn_backend.settings import Settings
 from fnbn_backend.suggest import SuggestTaskController
@@ -12,11 +14,34 @@ from pathlib import Path
 from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtWidgets import QApplication
 
-
 BASE_DIR = Path(__file__).resolve().parent
+
 
 def main() -> int:
 
+    # read args, don't run the frontend in case of a filename given
+    parser = argparse.ArgumentParser(
+        "FNBN",
+        description="Files Need Better Names",
+        epilog="Processing PDFs only so far",
+    )
+
+    parser.add_argument("-f", "--filename")
+    parser.add_argument("-d", "--dryrun")
+    parser.set_defaults(dryrun=True)
+
+    args = parser.parse_args()
+
+    if args.filename:
+
+        settings = Settings(Path.home() / ".fnbn-application" / "settings.json")
+
+        print(f"Fuck: {args.dryrun}")
+
+        BackendCli(settings).processFile(args.filename, args.dryrun)
+        return
+
+    ## run frontend
     QQuickStyle.setStyle("Fusion")
 
     app = QGuiApplication(sys.argv)
@@ -25,15 +50,14 @@ def main() -> int:
     app.setWindowIcon(QIcon(str(icon_path)))
 
     app.setApplicationName("FNBN 0.0.1")
-    app.setApplicationDisplayName("FNBN - Files Need Bettet Names 0.0.1")
+    app.setApplicationDisplayName("FNBN - Files Need Better Names 0.0.1")
     app.setOrganizationName("Baddonkey")
- 
+
     # setup main view
     view = QQuickView()
     view.engine().addImportPath(str(BASE_DIR))
     view.setTitle("FNBN - Files Need Better Names 0.0.1 | PDF-only")
     view.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
-    
 
     # setup the left side bar
     treeModel = treemodel.TreeModel()
@@ -46,14 +70,15 @@ def main() -> int:
 
     # setup settings
     settings = Settings(
-        Path.home() / ".fnbn-application" / "settings.json",
-        view.engine()
+        Path.home() / ".fnbn-application" / "settings.json", view.engine()
     )
     view.engine().rootContext().setContextProperty("settings", settings)
 
     # setup suggest task controller
     suggestTaskController = SuggestTaskController()
-    view.engine().rootContext().setContextProperty("suggestTaskController", suggestTaskController)
+    view.engine().rootContext().setContextProperty(
+        "suggestTaskController", suggestTaskController
+    )
 
     # setup the backend
     home = Path.home()
@@ -75,6 +100,7 @@ def main() -> int:
     del view
 
     return ret
+
 
 if __name__ == "__main__":
     sys.exit(main())

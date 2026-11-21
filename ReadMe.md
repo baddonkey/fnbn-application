@@ -42,3 +42,4 @@ open FNBN.app
 ## Models tested
 * qwen3-vl:4b-instruct-q8_0
 * qwen3-vl:2b-instruct-q8_0
+* gemma3:4b

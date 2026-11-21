@@ -147,6 +147,13 @@ Dialog {
                 }
             }
         }
+
+        Button {
+            text: qsTr("Register Command in File Explorer")
+            onClicked: {
+                root.settingsStore.registerCommand()
+            }
+        }
     }
 
     onOpened: {

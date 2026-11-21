@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from PySide6.QtCore import Property, QObject, Signal, Slot
 from PySide6.QtGui import QFont, QFontDatabase
+from fnbn_backend.register_command import RegisterCommandFactory
 
 class Settings(QObject): 
     settingsChanged = Signal()
@@ -98,3 +99,7 @@ class Settings(QObject):
 
         if 0 <= index < len(prompts):
             prompts[index]["value"] = value
+
+    @Slot()
+    def registerCommand(self):
+        RegisterCommandFactory._getInstance().register()
