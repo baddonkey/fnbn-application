@@ -29,7 +29,7 @@ class RegisterWindowsCommand(RegisterCommand):
 
         with winreg.CreateKey(winreg.HKEY_CURRENT_USER, VERB_KEY) as verb:
             winreg.SetValueEx(verb, "", 0, winreg.REG_SZ, "This file needs a better Name ...")
-            winreg.SetValueEx(verb, "MultiSelectModel", 0, winreg.REG_SZ, "Single")
+            winreg.SetValueEx(verb, "MultiSelectModel", 0, winreg.REG_SZ, "Document")
 
             with winreg.CreateKey(verb, "command") as command:
                 winreg.SetValueEx(
