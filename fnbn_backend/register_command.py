@@ -1,6 +1,7 @@
 from abc import ABC
 from pathlib import Path
 import platform
+import sys
 
 class RegisterCommand(ABC):
 
@@ -19,7 +20,7 @@ class RegisterWindowsCommand(RegisterCommand):
 
         import winreg
 
-        EXE = Path(r"C:\Tools\FNBN\main.exe")
+        EXE = Path(sys.executable)
         VERB_KEY = r"Software\Classes\*\shell\RunFnbn"
 
         if not EXE.is_absolute() or not EXE.is_file():
@@ -29,7 +30,7 @@ class RegisterWindowsCommand(RegisterCommand):
 
         with winreg.CreateKey(winreg.HKEY_CURRENT_USER, VERB_KEY) as verb:
             winreg.SetValueEx(verb, "", 0, winreg.REG_SZ, "This file needs a better Name ...")
-            winreg.SetValueEx(verb, "MultiSelectModel", 0, winreg.REG_SZ, "Document")
+            winreg.SetValueEx(verb, "MultiSelectModel", 0, winreg.REG_SZ, "Player")
 
             with winreg.CreateKey(verb, "command") as command:
                 winreg.SetValueEx(
