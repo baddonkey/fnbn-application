@@ -92,7 +92,7 @@ class PDFTitleExtractor(ImageTitleExtractor):
 
     def extract_title(self, file_path: str | Path) -> str | None:
         image = self.render_first_page(file_path)
-        title = self.extract_title_from_image(image)
+        title = self.extract_title_with_image(image)
 
         if not title or title.upper() == "UNKNOWN":
             return None
